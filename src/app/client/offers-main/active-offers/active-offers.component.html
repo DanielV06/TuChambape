@@ -1,0 +1,47 @@
+<div class="active-offers-container">
+  <div *ngIf="isLoading && activeOffers.length === 0" class="loading-indicator">
+    Cargando ofertas activas...
+  </div>
+
+  <div *ngIf="!isLoading && activeOffers.length === 0" class="no-offers">
+    <p>Actualmente no tienes ofertas activas.</p>
+    <button routerLink="../crear" class="btn-create-first-offer">Crea tu primera oferta</button>
+  </div>
+
+  <div *ngFor="let offer of activeOffers" class="offer-card">
+    <div class="offer-details">
+      <h3>{{ offer.title }}</h3>
+      <p class="offer-description-label">Descripción:</p>
+      <p class="offer-description">{{ offer.description }}</p>
+    </div>
+
+    <div class="applicants-section" *ngIf="offer.applicants.length > 0">
+      <h4>Técnicos Interesados / Sugeridos:</h4>
+      <div class="applicants-grid">
+        <div *ngFor="let applicant of offer.applicants" class="applicant-card">
+          <img
+            [src]="applicant.imageUrl"
+            [alt]="applicant.name"
+            class="applicant-photo"
+            (error)="handleImageError($event, applicant.name)"
+          >
+          <p class="applicant-name">{{ applicant.name }}</p>
+          <div class="applicant-rating">
+            <span *ngFor="let i of [].constructor(applicant.rating)" class="star filled">★</span>
+            <span *ngFor="let i of [].constructor(5 - applicant.rating)" class="star">☆</span>
+          </div>
+          <p class="applicant-specialty">{{ applicant.specialty }}</p>
+          <div class="applicant-actions">
+            <button class="btn btn-view-profile" (click)="viewTechnicianProfile(applicant.id)">Ver Perfil</button>
+            <button class="btn btn-select-tech" (click)="selectTechnician(offer.id, applicant.id)">
+              <span class="check-icon">✔</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="!isLoading && offer.applicants.length === 0" class="no-applicants">
+      <p>Aún no hay técnicos interesados en esta oferta.</p>
+    </div>
+  </div>
+</div>

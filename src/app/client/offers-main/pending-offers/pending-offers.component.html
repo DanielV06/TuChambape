@@ -1,0 +1,122 @@
+<div class="pending-offers-container">
+  <div *ngIf="isLoading && !offer" class="loading-indicator">Cargando...</div>
+
+  <div *ngIf="!isLoading && !offer && currentStep === 'details'" class="no-offer-message">
+    <p>No tienes ofertas pendientes en este momento.</p>
+  </div>
+
+  <div *ngIf="!isLoading && offer && currentStep === 'details'" class="offer-in-progress">
+    <div class="offer-header">
+      <h2><span class="icon-progress">🛠️</span> {{ offer.title }} ({{ offer.statusLabel }})</h2>
+    </div>
+    <p class="offer-description-label">Descripción:</p>
+    <p class="offer-description">{{ offer.description }}</p>
+
+    <div class="content-wrapper">
+      <div class="worker-details-column">
+        <h4>Trabajador Encargado:</h4>
+        <div class="worker-card">
+          <img
+            [src]="offer.technician.imageUrl"
+            [alt]="offer.technician.name"
+            class="worker-photo"
+            (error)="handleImageError($event, offer.technician.name)"
+          >
+          <div class="worker-info">
+            <p class="worker-name">{{ offer.technician.name }}</p>
+            <p class="worker-specialty">{{ offer.technician.specialty }}</p>
+            <div class="worker-rating">
+              <span *ngFor="let i of [].constructor(getFloor(offer.technician.rating))" class="star filled">★</span>
+              <span *ngFor="let i of [].constructor(5 - getFloor(offer.technician.rating))" class="star">☆</span>
+              ({{ offer.technician.reviews }} calificaciones)
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-action btn-orange" (click)="proceedToPayment()">Proceder al Pago / Finalizar Etapa</button>
+      </div>
+
+      <div class="project-details-column">
+        <h4>Detalles del Proyecto:</h4>
+        <div class="project-details-card">
+          <div class="detail-item">
+            <span class="detail-label">Horario de Trabajo:</span>
+            <div class="progress-bar-container">
+              <div class="progress-bar" [style.width.%]="offer.projectDetails.workScheduleProgress">
+                {{ offer.projectDetails.workScheduleProgress }}%
+              </div>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Dirección:</span>
+            <span class="detail-value">{{ offer.projectDetails.address }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Presupuesto:</span>
+            <span class="detail-value">{{ offer.projectDetails.budget }}</span>
+          </div>
+          <div class="detail-item map-item">
+            <span class="detail-label">Mapa Geográfico:</span>
+            <img
+              [src]="offer.projectDetails.mapImageUrl"
+              alt="Mapa Geográfico"
+              class="map-placeholder"
+              (error)="handleImageError($event, 'mapa del proyecto')"
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && offer && currentStep === 'payment'" class="payment-section">
+    <div class="payment-form-box">
+      <div class="payment-header">
+        <h3>Pago</h3>
+        <p class="payment-client-name">{{ offer.technician.name }}</p>
+      </div>
+
+      <div class="payment-review">
+        <h4>REVISAR Y REALIZAR PEDIDO</h4>
+        <p class="payment-instruction">Verifica tu información y haz clic en Realizar pedido</p>
+      </div>
+
+      <form (ngSubmit)="submitPayment()" #paymentForm="ngForm" class="payment-summary-form">
+        <div class="payment-summary">
+          <div class="amount-display">
+            <span class="currency">PEN</span>
+            <span class="amount">{{ offer.paymentAmount?.toFixed(2) }}</span>
+          </div>
+          <div class="recipient-info">
+            <p class="account-number">Número de cuenta: XX-4568-XXXX</p>
+            <p class="recipient-name">{{ offer.technician.name }}</p>
+            <p class="recipient-specialty">{{ offer.technician.specialty }}</p>
+          </div>
+          <div class="terms-agreement">
+            <input type="checkbox" id="acceptTerms" name="acceptTerms" [(ngModel)]="paymentInfo.acceptTerms" required>
+            <label for="acceptTerms">
+              Haz clic aquí para aceptar compartir tu correo electrónico con JobConnect... (texto completo de la imagen)*
+            </label>
+          </div>
+          <button type="submit" class="btn btn-action btn-orange btn-pay" [disabled]="isLoading || !paymentInfo.acceptTerms || !paymentForm.form.valid">
+            <span *ngIf="!isLoading">Realizar Pedido</span>
+            <span *ngIf="isLoading">Procesando...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="currentStep === 'paymentSuccess' && offer" class="payment-success-modal-overlay">
+    <div class="payment-success-modal">
+      <div class="success-icon-container">
+        <span class="success-icon">✔</span>
+      </div>
+      <h4>Se realizó el pago de forma exitosa!</h4>
+      <p class="payment-amount-modal">PEN {{ offer.paymentAmount?.toFixed(2) }}</p>
+      <p class="technician-name-modal">{{ offer.technician.name }}</p>
+      <p class="technician-specialty-modal">{{ offer.technician.specialty }}</p>
+      <button class="btn btn-action btn-orange" (click)="finishPaymentFlow()">Continuar</button>
+    </div>
+  </div>
+
+</div>

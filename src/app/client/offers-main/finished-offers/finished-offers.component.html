@@ -1,0 +1,100 @@
+<div class="finished-offers-container">
+  <div *ngIf="isLoading && finishedOffers.length === 0" class="loading-indicator">
+    Cargando ofertas finalizadas...
+  </div>
+
+  <div *ngIf="!isLoading && finishedOffers.length === 0" class="no-offers">
+    <p>No tienes ofertas finalizadas.</p>
+  </div>
+
+  <div *ngFor="let offer of finishedOffers" class="offer-card-finished">
+    <div class="offer-header">
+      <h2><span class="icon-finished">🏁</span> {{ offer.title }} ({{ offer.statusLabel }})</h2>
+    </div>
+    <p class="offer-description-label">Descripción:</p>
+    <p class="offer-description">{{ offer.description }}</p>
+
+    <div class="content-wrapper-finished">
+      <div class="worker-column">
+        <h4>Trabajador Encargado:</h4>
+        <div class="worker-card">
+          <img
+            [src]="offer.technician.imageUrl"
+            [alt]="offer.technician.name"
+            class="worker-photo"
+            (error)="handleImageError($event, offer.technician.name)"
+          >
+          <div class="worker-info">
+            <p class="worker-name">{{ offer.technician.name }}</p>
+            <p class="worker-specialty">{{ offer.technician.specialty }}</p>
+            <div class="worker-rating">
+              <span *ngFor="let i of getStars(offer.technician.rating)" class="star filled">★</span>
+              <span *ngFor="let i of getEmptyStars(offer.technician.rating)" class="star">☆</span>
+              ({{ offer.technician.reviews }} calific.)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reviews-column">
+        <h4>Reseñas y comentarios</h4>
+        <div class="overall-summary">
+          <div class="overall-rating-value">{{ offer.overallReviewSummary.averageRating.toFixed(1) }}</div>
+          <div class="overall-stars">
+            <span *ngFor="let i of getStars(offer.overallReviewSummary.averageRating)" class="star filled large">★</span>
+            <span *ngFor="let i of getEmptyStars(offer.overallReviewSummary.averageRating)" class="star large">☆</span>
+          </div>
+          <p class="total-reviews-text">{{ offer.overallReviewSummary.totalReviews }} Reseñas</p>
+          <p class="total-comments-text">{{ offer.overallReviewSummary.totalComments }} Comentarios</p>
+        </div>
+
+        <div class="aspect-ratings" *ngIf="offer.overallReviewSummary.aspectRatings">
+          <div class="aspect">
+            <span>Responsabilidad</span>
+            <div class="stars">
+              <span *ngFor="let i of getStars(offer.overallReviewSummary.aspectRatings.responsibility)" class="star filled small">★</span>
+              <span *ngFor="let i of getEmptyStars(offer.overallReviewSummary.aspectRatings.responsibility)" class="star small">☆</span>
+            </div>
+          </div>
+          <div class="aspect">
+            <span>Puntualidad</span>
+            <div class="stars">
+              <span *ngFor="let i of getStars(offer.overallReviewSummary.aspectRatings.punctuality)" class="star filled small">★</span>
+              <span *ngFor="let i of getEmptyStars(offer.overallReviewSummary.aspectRatings.punctuality)" class="star small">☆</span>
+            </div>
+          </div>
+          <div class="aspect">
+            <span>Amabilidad</span>
+            <div class="stars">
+              <span *ngFor="let i of getStars(offer.overallReviewSummary.aspectRatings.kindness)" class="star filled small">★</span>
+              <span *ngFor="let i of getEmptyStars(offer.overallReviewSummary.aspectRatings.kindness)" class="star small">☆</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="individual-reviews">
+          <div *ngFor="let review of offer.reviews" class="review-item">
+            <div class="review-author">
+              <img
+                [src]="review.authorImageUrl || 'assets/img/default-avatar.png'"
+                [alt]="review.authorName"
+                class="author-avatar"
+                (error)="handleImageError($event, review.authorName + ' avatar')"
+              >
+              <div class="author-details">
+                <span class="author-name">{{ review.authorName }}</span>
+                <span class="review-date">{{ review.date }}</span>
+                <span *ngIf="review.isVerifiedAuthor" class="verified-badge">Verificado</span>
+              </div>
+              <div class="review-stars-individual">
+                <span *ngFor="let i of getStars(review.rating)" class="star filled">★</span>
+                <span *ngFor="let i of getEmptyStars(review.rating)" class="star">☆</span>
+              </div>
+            </div>
+            <p class="review-comment">{{ review.comment }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,126 @@
+<div class="preferences-container">
+  <h3 class="form-title">Elige tus preferencias acerca de los servicios técnicos</h3>
+
+  <form (ngSubmit)="savePreferences()" #preferencesForm="ngForm" class="preferences-form">
+    <div *ngIf="isLoading" class="loading-indicator">Cargando preferencias...</div>
+
+    <div *ngIf="!isLoading">
+      <div *ngIf="successMessage && !generalError" class="form-message success-message">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="generalError" class="form-message error-message general-error">
+        {{ generalError }}
+      </div>
+
+      <div class="form-columns-wrapper">
+        <div class="form-column">
+          <fieldset>
+            <div class="form-group">
+              <label for="preferredCategory">Categoría del Servicio</label>
+              <select id="preferredCategory" name="preferredCategory" [(ngModel)]="userPreferences.preferredCategory">
+                <option value="">Cualquiera</option>
+                <option *ngFor="let cat of categories" [value]="cat">{{cat}}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="preferredLocation">Ubicación / Distrito</label>
+              <select id="preferredLocation" name="preferredLocation" [(ngModel)]="userPreferences.preferredLocation">
+                <option value="">Cualquiera</option>
+                <option *ngFor="let loc of locations" [value]="loc">{{loc}}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="preferredServiceType">Tipo de Servicio Ofrecido</label>
+              <select id="preferredServiceType" name="preferredServiceType" [(ngModel)]="userPreferences.preferredServiceType">
+                <option value="">Cualquiera</option>
+                <option *ngFor="let type of serviceTypes" [value]="type">{{type}}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="preferredExperienceYears">Años de Experiencia</label>
+              <div class="segmented-control">
+                <button type="button" *ngFor="let range of experienceRanges"
+                        [class.active]="userPreferences.preferredExperienceYears === range"
+                        (click)="userPreferences.preferredExperienceYears = range">
+                  {{range === 'Cualquiera' ? '0+' : range.replace(' años', '')}}
+                </button>
+              </div>
+            </div>
+            <div class="column-actions">
+              <button type="button" class="btn btn-apply-column" (click)="applyColumnFilters('left')">Aplicar</button>
+              <button type="button" class="btn btn-clear-column" (click)="clearColumnFilters('left')">Borrar</button>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="form-column">
+          <fieldset>
+            <div class="form-group">
+              <label for="preferredAvailability">Disponibilidad</label>
+              <select id="preferredAvailability" name="preferredAvailability" [(ngModel)]="userPreferences.preferredAvailability">
+                <option value="">Cualquiera</option>
+                <option *ngFor="let avail of availabilityOptions" [value]="avail">{{avail}}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="minAcceptableRating">Valoración Mínima</label>
+              <select id="minAcceptableRating" name="minAcceptableRating" [(ngModel)]="userPreferences.minAcceptableRating">
+                <option *ngFor="let opt of ratingOptions" [value]="opt.value">{{opt.label}}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="estimatedBudgetRange">Presupuesto Estimado</label>
+              <select id="estimatedBudgetRange" name="estimatedBudgetRange" [(ngModel)]="userPreferences.estimatedBudgetRange">
+                <option value="">Cualquiera</option>
+                <option *ngFor="let budget of budgetRanges" [value]="budget">{{budget}}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Idioma</label>
+              <div class="language-options">
+                <div class="checkbox-group">
+                  <input type="checkbox" id="langSpanish" name="langSpanish" [(ngModel)]="userPreferences.languages.spanish">
+                  <label for="langSpanish">Español</label>
+                </div>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="langEnglish" name="langEnglish" [(ngModel)]="userPreferences.languages.english">
+                  <label for="langEnglish">Inglés</label>
+                </div>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="langPortuguese" name="langPortuguese" [(ngModel)]="userPreferences.languages.portuguese">
+                  <label for="langPortuguese">Portugués</label>
+                </div>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="langOther" name="langOther" [(ngModel)]="userPreferences.languages.other">
+                  <label for="langOther">Otro</label>
+                </div>
+                <input *ngIf="userPreferences.languages.other" type="text" name="otherLanguageName"
+                       [(ngModel)]="userPreferences.languages.otherLanguageName" placeholder="Especificar otro idioma" class="other-language-input">
+                <div *ngIf="generalError && userPreferences.languages.other && !userPreferences.languages.otherLanguageName" class="field-error-message">
+                  {{ generalError }}
+                </div>
+              </div>
+            </div>
+            <div class="column-actions">
+              <button type="button" class="btn btn-apply-column" (click)="applyColumnFilters('right')">Aplicar</button>
+              <button type="button" class="btn btn-clear-column" (click)="clearColumnFilters('right')">Borrar</button>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <div class="form-actions-main">
+        <button type="submit" class="btn btn-save-changes-prefs" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Guardar cambios</span>
+          <span *ngIf="isLoading">Guardando...</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
